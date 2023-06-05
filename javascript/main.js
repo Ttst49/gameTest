@@ -46,6 +46,46 @@ loadSpriteAtlas("images/sprites/link2.png",{
 })
 
 
+loadSpriteAtlas("images/sprites/link2.png",{
+    "evillink": {
+        "x":0,
+        "y":0,
+        "width":648,
+        "height":30,
+        "sliceX":16,
+        "anims":{
+            "idle":{
+                "from":4,
+                "to":4,
+                "speed":3,
+                "loop":true,
+            },
+            "run":{
+                "from":5,
+                "to":7,
+                "speed":3,
+                "loop":true,
+            },
+            "stabFront":{
+                "from":12,
+                "to":13,
+                "speed":3,
+                "loop":false,
+            },
+            "stabBack":{
+                "from":11,
+                "to":10,
+                "speed":3,
+                "loop":false,
+            },
+
+
+        }
+
+    }
+})
+
+
 loadSound("sword",'music/AOL_Sword.wav')
 loadSprite("brick","images/sprites/brick.png")
 loadSprite("rideau","images/sprites/rideau.png")
@@ -93,7 +133,7 @@ const levels = addLevel([
     "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff",
     "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff",
     "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff",
-    "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffplfpffpff",
+    "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffplfpffjff",
     "ggggggggggggggggggggggggggggggggggggggggggggg",
     "ggggggggggggggggggggggggggggggggggggggggggggg"
 
@@ -117,9 +157,20 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            health(3),
             z(1000),
             "player",
         ],
+
+        "j": ()=>[
+            sprite("evillink",{anim:"idle"}),
+            area(),
+            body({isStatic: true}),
+            anchor("bot"),
+            z(1000),
+            "enemy",
+        ],
+
         "r": ()=>[
             sprite("rideau"),
             area(),
@@ -188,7 +239,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
-            "ground",
+            "platform",
         ],
         "a": ()=>[
             sprite("carpette"),
@@ -201,6 +252,20 @@ const levels = addLevel([
 })
 
 player = levels.get("player")[0]
+enemy = levels.get("enemy")[0]
+
+
+player.onCollide("enemy",(enemy)=>{
+    player.hurt(1)
+})
+
+player.on("hurt",()=>{
+    play("sword")
+})
+
+player.on("death",()=>(
+    destroy(player)
+))
 
 player.onUpdate(()=>{
     camPos(player.worldPos())
@@ -235,3 +300,4 @@ onKeyDown("right", () => {
         player.play("run")
     }
 })
+
