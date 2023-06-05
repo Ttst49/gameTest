@@ -2,6 +2,20 @@ kaboom({
     background: [0,0,0]
 })
 
+/** "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+ "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+ "rrprr<rr<rr<rr<rr<rr<rrrrrr<rr<rr<rr<rr<rr<rr",
+ "$$p$$p$$p$$p$$p$$p$$p$$$$$rp$$p$$p$$p$$p$$p$$",
+ "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff",
+ "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff",
+ "ffpffpffpffpffpffpffp+ffff+pffpffpffpffpffpff",
+ "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff",
+ "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff",
+ "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff",
+ "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@",
+ "ggggggggggggggggggggggggggggggggggggggggggggg",
+ "ggggggggggggggggggggggggggggggggggggggggggggg"**/
+
 // define gravity
 setGravity(2400)
 
@@ -103,13 +117,7 @@ loadSprite("carpette","images/sprites/carpette.png")
 
 /**---------------------------------------------------------------------------------------------------**/
 
-/**
-const player = [
-    sprite("link",{anim: "idle"}),  // renders as a sprite
-    area(),          // has a collider
-    body(), // responds to physics and gravity
-]
- **/
+
 
 const SPEED = 120
 
@@ -122,24 +130,18 @@ const SPEED = 120
 })
 
 
-const levels = addLevel([
-    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-    "rrprr<rr<rr<rr<rr<rr<rrrrrr<rr<rr<rr<rr<rr<rr",
-    "$$p$$p$$p$$p$$p$$p$$p$$$$$rp$$p$$p$$p$$p$$p$$",
-    "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff",
-    "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff",
-    "ffpffpffpffpffpffpffp+ffff+pffpffpffpffpffpff",
-    "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff",
-    "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff",
-    "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff",
-    "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffplfpffjff",
-    "ggggggggggggggggggggggggggggggggggggggggggggg",
-    "ggggggggggggggggggggggggggggggggggggggggggggg"
+ const levels = addLevel([
+
+ "ffpffpffpffpffp                             @",
+ "ggggggggggggggggggggggggggggggggggggggggggggg",
+ "ggggggggggggggggggggggggggggggggggggggggggggg"
 
 
 
-],{
+ ],{
+
+
+
     tileWidth: 16,
     tileHeight: 16,
     pos: (width()/2,height()/2),
@@ -150,8 +152,10 @@ const levels = addLevel([
                 area(),
                 body({isStatic: true}),
                 anchor("bot"),
+                z(-10),
                 "brick",
         ],
+        /**
         "l": ()=>[
             sprite("link",{anim:"idle"}),
             area(),
@@ -167,15 +171,18 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            health(3),
             z(1000),
             "enemy",
         ],
+         **/
 
         "r": ()=>[
             sprite("rideau"),
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "rideau",
         ],
         "p": ()=>[
@@ -183,6 +190,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "pilier",
         ],
         "<": ()=>[
@@ -190,6 +198,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "tetePilier",
         ],
         "$": ()=>[
@@ -197,6 +206,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "finRideau",
         ],
         "f": ()=>[
@@ -204,6 +214,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "background",
         ],
         "o": ()=>[
@@ -211,6 +222,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "flambeau",
         ],
         "+": ()=>[
@@ -218,6 +230,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "flamme",
         ],
         "z": ()=>[
@@ -225,6 +238,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "zeldaBottom",
         ],
         "^": ()=>[
@@ -232,6 +246,7 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "zeldaHead",
         ],
         "g": ()=>[
@@ -246,13 +261,42 @@ const levels = addLevel([
             area(),
             body({isStatic: true}),
             anchor("bot"),
+            z(-10),
             "carpette",
+        ],
+        "@": ()=>[
+            sprite("link"),
+            area(),
+            body({isStatic: true}),
+            anchor("bot"),
+            "portal",
         ],
     }
 })
 
-player = levels.get("player")[0]
-enemy = levels.get("enemy")[0]
+
+const player = add([
+    sprite("link",{anim: "idle"}),  // renders as a sprite
+    area(),          // has a collider
+    pos(2200,1500),
+    body(), // responds to physics and gravity
+    anchor("bot"),
+    health(3),
+    z(1000),
+    "player"
+])
+
+const enemy = add([
+    sprite("evillink",{anim: "idle"}),  // renders as a sprite
+    area(),          // has a collider
+    pos(2200,1500),
+    body(), // responds to physics and gravity
+    anchor("bot"),
+    health(3),
+    z(1000),
+    "enemy"
+])
+
 
 
 player.onCollide("enemy",(enemy)=>{
@@ -267,6 +311,7 @@ player.on("death",()=>(
     destroy(player)
 ))
 
+
 player.onUpdate(()=>{
     camPos(player.worldPos())
     camScale(5)
@@ -276,6 +321,7 @@ player.onUpdate(()=>{
 onKeyPress("space", () => {
     player.play("stabFront")
     play("sword")
+
     player.onAnimEnd((anim) =>{
         if (anim === "stabFront"){
             player.play("idle")
@@ -300,4 +346,3 @@ onKeyDown("right", () => {
         player.play("run")
     }
 })
-
