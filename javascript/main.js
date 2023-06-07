@@ -38,8 +38,17 @@ export function loadAllSprites(){
         "enemy": {
             "x":0,
             "y":0,
-            "width":16,
+            "sliceX":2,
+            "width":32,
             "height":12,
+            "anims":{
+                "run":{
+                    "from":0,
+                    "to":1,
+                    "loop":true,
+                    "speed":3
+                }
+            }
 
         }
     })
@@ -66,10 +75,9 @@ export function loadAllSprites(){
         loadSprite(`menu${i}`,`images/menu/menu_${i}.png`)
     }
 
-    for (let i = 1; i<=132;i++){
-        loadSprite(`town${i}`,`images/town/town_${i}.png`)
+    for (let i = 1;i<=5;i++){
+        loadSprite(`wood${i}`,`images/sprites/wood/wood${i}.png`)
     }
-
 
 
 //Sound import
@@ -104,7 +112,7 @@ export function addEverythingNeeded(){
     ])
 
     const enemy = add([
-        sprite("enemy"),  // renders as a sprite
+        sprite("enemy",{anim:"run"}),  // renders as a sprite
         area(),          // has a collider
         pos(850,450),
         body(), // responds to physics and gravity
@@ -169,7 +177,7 @@ export function addEverythingNeeded(){
     })
 
 
-//Key pressed actions
+//Key pressed actionsc
 
     onKeyPress("space", () => {
         player.play("stabFront")
@@ -299,7 +307,7 @@ export let tilesSet = {
     ],
 
     "@": ()=>[
-        sprite("link"),
+        sprite("fond"),
         area(),
         body({isStatic: true}),
         anchor("bot"),
@@ -313,6 +321,35 @@ export let tilesSet = {
         anchor("bot"),
 
     ],
+
+
+
+
+    "1": () => [
+        sprite("wood1"),
+        anchor("bot"),
+    ],
+    "2": () => [
+        sprite("wood2"),
+        anchor("bot"),
+    ],
+    "3": () => [
+        sprite("wood3"),
+        anchor("bot"),
+    ],
+    "4": () => [
+        sprite("wood4"),
+        anchor("bot"),
+    ],
+    "5": () => [
+        sprite("wood5"),
+        anchor("bot"),
+        area(),
+        body({isStatic: true}),
+    ],
+
+
+
 
 }
 
@@ -406,11 +443,20 @@ export let niveaux = [
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
     [
-        "                            @\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
+        "111111111111111111111111111111111111111111111111",
+        "111111111111111111111111111111111111111111111111",
+        "111111111111111111111111111111111111111111111111",
+        "331111333333331111113311113333111111311333333111",
+        "ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
+        "ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
+        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "444444444444444444444444444444444444444444444444",
+        "555555555555555555555555555555555555555555555555",
+        "555555555555555555555555555555555555555555555555"
+
     ],
     [
         "//////////////////////@"
