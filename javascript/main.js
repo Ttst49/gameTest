@@ -61,6 +61,11 @@ export function loadAllSprites(){
     loadSprite("cactusB","images/sprites/cactusB.png")
     loadSprite("cactusT","images/sprites/cactusT.png")
 
+    for (let i = 1; i<=16;i++){
+        loadSprite(`menu${i}`,`images/menu/menu_${i}.png`)
+    }
+
+
 
 //Sound import
     loadSound("sword",'music/AOL_Sword.wav')
@@ -77,30 +82,6 @@ let SPEED = 120
 setGravity(2400)
 
 
-
-
-
-function addBackground(level,number){
-    const ui = add([
-        fixed(),
-        z(100),
-    ])
-
-    let j = 16
-
-    if (number==[2]){
-
-        level[number].forEach((line)=>{
-            for (let i = 0;i<line.length;i++){
-                ui.add([
-                    sprite("path"),
-                    pos(width()/5 + j,480)
-                ])
-                j+=16
-            }
-        })
-    }
-}
 
 //add Player and other necessary elements
 export function addEverythingNeeded(){
@@ -177,12 +158,10 @@ export function addEverythingNeeded(){
     player.onCollide("portal",()=>{
         go("nextLevel")
     })
-    /**
     player.onUpdate(()=>{
-        camPos(vec2(player.pos.x,500))
+        camPos(vec2(player.pos.x,550))
         camScale(3)
     })
-     **/
 
 
 //Key pressed actions
@@ -238,110 +217,68 @@ export function addEverythingNeeded(){
 //add tiles definition for levels
 
 export let tilesSet = {
-    "b": ()=>[
-        sprite("brick"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
-        z(-10),
-        "brick",
-    ],
 
-    /**
-     "l": ()=>[
-     sprite("link",{anim:"idle"}),
-     area(),
-     body({isStatic: true}),
-     anchor("bot"),
-     health(3),
-     z(1000),
-     "player",
-     ],
-
-     "j": ()=>[
-     sprite("enemy"),
-     area(),
-     body({isStatic: true}),
-     anchor("bot"),
-     health(3),
-     z(1000),
-     "enemy",
-     ],
-     **/
+        "b": ()=>[
+            sprite("brick"),
+            z(-10),
+            "brick",
+        ],
 
 
     "r": ()=>[
         sprite("rideau"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "rideau",
     ],
+
     "p": ()=>[
         sprite("pilier"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "pilier",
     ],
+
     "<": ()=>[
         sprite("tetePilier"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "tetePilier",
     ],
+
     "$": ()=>[
         sprite("finRideau"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "finRideau",
     ],
+
     "f": ()=>[
         sprite("fond"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "background",
     ],
+
     "o": ()=>[
         sprite("flambeau"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "flambeau",
     ],
+
     "+": ()=>[
         sprite("flamme"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "flamme",
     ],
+
     "z": ()=>[
         sprite("zeldaBas"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "zeldaBottom",
     ],
+
     "^": ()=>[
         sprite("zeldaHaut"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "zeldaHead",
     ],
+
     "g": ()=>[
         sprite("sol"),
         area(),
@@ -349,14 +286,13 @@ export let tilesSet = {
         anchor("bot"),
         "platform",
     ],
+
     "a": ()=>[
         sprite("carpette"),
-        area(),
-        body({isStatic: true}),
-        anchor("bot"),
         z(-10),
         "carpette",
     ],
+
     "@": ()=>[
         sprite("link"),
         area(),
@@ -364,12 +300,81 @@ export let tilesSet = {
         anchor("bot"),
         "portal",
     ],
+
     "/": ()=>[
         sprite("path"),
         area(),
         body({isStatic: true}),
         anchor("bot"),
 
+    ],
+
+}
+
+export let tilesSetMenu = {
+    "a": ()=>[
+        sprite("menu1"),
+        z(-10),
+    ],
+    "z": ()=>[
+        sprite("menu2"),
+        z(-10),
+    ],
+    "e": ()=>[
+        sprite("menu3"),
+        z(-10),
+    ],
+    "r": ()=>[
+        sprite("menu4"),
+        z(-10),
+    ],
+    "t": ()=>[
+        sprite("menu5"),
+        z(-10),
+    ],
+    "y": ()=>[
+        sprite("menu6"),
+        z(-10),
+    ],
+    "u": ()=>[
+        sprite("menu7"),
+        z(-10),
+    ],
+    "i": ()=>[
+        sprite("menu8"),
+        z(-10),
+    ],
+    "o": ()=>[
+        sprite("menu9"),
+        z(-10),
+    ],
+    "p": ()=>[
+        sprite("menu10"),
+        z(-10),
+    ],
+    "q": ()=>[
+        sprite("menu11"),
+        z(-10),
+    ],
+    "s": ()=>[
+        sprite("menu12"),
+        z(-10),
+    ],
+    "d": ()=>[
+        sprite("menu13"),
+        z(-10),
+    ],
+    "f": ()=>[
+        sprite("menu14"),
+        z(-10),
+    ],
+    "g": ()=>[
+        sprite("menu15"),
+        z(-10),
+    ],
+    "h": ()=>[
+        sprite("menu16"),
+        z(-10),
     ],
 
 }
@@ -409,14 +414,27 @@ export let niveaux = [
 
 ]
 
+//define levels informations
+let levelsInfo = {
+    "nextLevel" : {
+        "tag":"nextLevel",
+        "levelNumber": 0
+    }
+}
+
+
 //manage scenes in the game
 
 //define the first scene
-scene("start",(niveau = niveaux)=>{
+scene("start",()=>{
+
     const level= addLevel([
 
+        "azer",
+        "tyui",
+        "opqs",
+        "dfgh"
 
-        `${niveau[2]}`
 
 
 
@@ -424,33 +442,40 @@ scene("start",(niveau = niveaux)=>{
 
 
 
-        tileWidth: 16,
-        tileHeight: 16,
-        pos: (500,500),
+        tileWidth: 64,
+        tileHeight: 64,
+        pos: (width()/2,height()/2),
 
         tiles:
-        tilesSet
+        tilesSetMenu
 
     })
 
-    addEverythingNeeded()
-    addBackground(niveau,2)
+    camPos(width()/3 + 55,height()/2 + 100)
+    camScale(5)
+
+    onKeyPress("space",()=>{
+        go("nextLevel")
+    })
 
 
 })
 
+
+
+//sceneGenerator("nextLevel")
+
+
 //define the next level to appear in the game
-scene("nextLevel",(niveau = niveaux)=>{
+scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumber])=>{
 
 
-    const level = addLevel([
+    const level = addLevel(
 
 
-        `${niveau[0]}`
+        niveau
 
-
-
-    ],{
+    ,{
 
         tileWidth: 16,
         tileHeight: 16,
@@ -460,7 +485,7 @@ scene("nextLevel",(niveau = niveaux)=>{
         tilesSet
 
     })
-
+console.log(niveaux)
     addEverythingNeeded()
 
 
