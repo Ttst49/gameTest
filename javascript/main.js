@@ -61,8 +61,13 @@ export function loadAllSprites(){
     loadSprite("cactusB","images/sprites/cactusB.png")
     loadSprite("cactusT","images/sprites/cactusT.png")
 
+
     for (let i = 1; i<=16;i++){
         loadSprite(`menu${i}`,`images/menu/menu_${i}.png`)
+    }
+
+    for (let i = 1; i<=132;i++){
+        loadSprite(`town${i}`,`images/town/town_${i}.png`)
     }
 
 
@@ -91,7 +96,7 @@ export function addEverythingNeeded(){
     const player = add([
         sprite("link",{anim: "idle"}),  // renders as a sprite
         area(),          // has a collider
-        pos(500,450),
+        pos(800,450),
         body(), // responds to physics and gravity
         health(3),
         z(1000),
@@ -101,7 +106,7 @@ export function addEverythingNeeded(){
     const enemy = add([
         sprite("enemy"),  // renders as a sprite
         area(),          // has a collider
-        pos(600,450),
+        pos(850,450),
         body(), // responds to physics and gravity
         health(3),
         patrol(),
@@ -156,7 +161,7 @@ export function addEverythingNeeded(){
         destroy(enemy)
     })
     player.onCollide("portal",()=>{
-        go("nextLevel")
+        sceneGenerator()
     })
     player.onUpdate(()=>{
         camPos(vec2(player.pos.x,550))
@@ -422,6 +427,11 @@ let levelsInfo = {
     }
 }
 
+function sceneGenerator(){
+    levelsInfo.nextLevel.levelNumber +=1
+    go(levelsInfo.nextLevel.tag)
+}
+
 
 //manage scenes in the game
 
@@ -460,10 +470,6 @@ scene("start",()=>{
 
 
 })
-
-
-
-//sceneGenerator("nextLevel")
 
 
 //define the next level to appear in the game
