@@ -69,6 +69,7 @@ export function loadAllSprites(){
     loadSprite("corruptedPath","images/sprites/corruptedPath.png")
     loadSprite("cactusB","images/sprites/cactusB.png")
     loadSprite("cactusT","images/sprites/cactusT.png")
+    loadSprite("heart","images/sprites/heart.png")
 
 
     for (let i = 1; i<=16;i++){
@@ -96,33 +97,67 @@ setGravity(2400)
 
 
 
+
 //add Player and other necessary elements
-export function addEverythingNeeded(){
+export function addEverythingNeeded(numberOfEnnemies = 0){
 
 //Player and enemies creation
 
     const player = add([
         sprite("link",{anim: "idle"}),  // renders as a sprite
         area(),          // has a collider
-        pos(800,450),
+        pos(700,600),
         body(), // responds to physics and gravity
-        health(3),
+        health(10),
         z(1000),
         "player"
     ])
 
-    const enemy = add([
-        sprite("enemy",{anim:"run"}),  // renders as a sprite
-        area(),          // has a collider
-        pos(850,450),
-        body(), // responds to physics and gravity
-        health(3),
-        patrol(),
-        z(1000),
-        "enemy"
-    ])
+    let j = 0
+    let defaultHealth = 10
 
-    function patrol(speed = 60, dir = 1) {
+    function refreshLife(){
+        for (let i=0;i<=defaultHealth;i++){
+            const heart = add([
+                sprite("heart"),
+                pos(j,0),
+                fixed()
+            ])
+            j +=16
+        }
+    }
+
+    refreshLife()
+
+    for (let i=0;i<=numberOfEnnemies;i++){
+        const enemy = add([
+            sprite("enemy",{anim:"run"}),  // renders as a sprite
+            area(),          // has a collider
+            pos(Math.random()*(1000-850 +1)+850,600),
+            body(), // responds to physics and gravity
+            health(3),
+            patrol(),
+            z(1000),
+            "enemy"
+        ])
+        player.onCollide("enemy",(enemy)=>{
+            if (player.curAnim() === "stabFront"){
+                enemy.hurt(5)
+            }else{
+                player.hurt(0.5)
+            }
+
+
+        })
+        enemy.on("hurt",()=>{
+            play("fire")
+        })
+        enemy.on("death",()=>{
+            destroy(enemy)
+        })
+    }
+
+    function patrol(speed = 60, dir = -1) {
         return {
             id: "patrol",
             require: [ "pos", "area" ],
@@ -147,27 +182,16 @@ export function addEverythingNeeded(){
 
 //collision and touch actions
 
-    player.onCollide("enemy",(enemy)=>{
-        if (player.curAnim() === "stabFront"){
-            enemy.hurt(5)
-        }else{
-            player.hurt(1)
-        }
 
-
-    })
     player.on("hurt",()=>{
         play("hurt")
-    })
-    enemy.on("hurt",()=>{
-        play("fire")
+        defaultHealth--
+        refreshLife()
+
     })
     player.on("death",()=>(
-        destroy(player), play("death")
+        destroy(player), play("death"), go("lose")
     ))
-    enemy.on("death",()=>{
-        destroy(enemy)
-    })
     player.onCollide("portal",()=>{
         sceneGenerator()
     })
@@ -443,19 +467,19 @@ export let niveaux = [
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
     [
-        "111111111111111111111111111111111111111111111111",
-        "111111111111111111111111111111111111111111111111",
-        "111111111111111111111111111111111111111111111111",
-        "331111333333331111113311113333111111311333333111",
-        "ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
-        "ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
-        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "444444444444444444444444444444444444444444444444",
-        "555555555555555555555555555555555555555555555555",
-        "555555555555555555555555555555555555555555555555"
+        "           111111111111111111111111111111111111111111111111",
+        "           111111111111111111111111111111111111111111111111",
+        "           111111111111111111111111111111111111111111111111",
+        "           331111333333331111113311113333111111311333333111",
+        "           ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
+        "           ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
+        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "           444444444444444444444444444444444444444444444444",
+        "           555555555555555555555555555555555555555555555555",
+        "           555555555555555555555555555555555555555555555555"
 
     ],
     [
@@ -538,7 +562,7 @@ scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumbe
 
     })
 console.log(niveaux)
-    addEverythingNeeded()
+    addEverythingNeeded(0)
 
 
 
@@ -552,7 +576,7 @@ scene("lose", () => {
         pos(12),
     ])
 
-    onKeyPress(() => kaboom())
+    onKeyPress(() => go("nextLevel"))
 })
 
 
