@@ -3,9 +3,8 @@ kaboom({
     background: [0,0,0]
 })
 
-
 //Sprites import
-function loadAllSprites(){
+export function loadAllSprites(){
     loadSpriteAtlas("images/sprites/link2.png",{
         "link": {
             "x":0,
@@ -74,48 +73,37 @@ function loadAllSprites(){
 
 
 //Options of the game
-function loadOptions(){
-    return SPEED = 120,setGravity(2400)
+let SPEED = 120
+setGravity(2400)
+
+
+
+
+
+function addBackground(level,number){
+    const ui = add([
+        fixed(),
+        z(100),
+    ])
+
+    let j = 16
+
+    if (number==[2]){
+
+        level[number].forEach((line)=>{
+            for (let i = 0;i<line.length;i++){
+                ui.add([
+                    sprite("path"),
+                    pos(width()/5 + j,480)
+                ])
+                j+=16
+            }
+        })
+    }
 }
 
-
-//Levels on the game
-
-let niveaux = [
-
-
-    [
-        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\r",
-        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\r",
-        "rrprr<rr<rr<rr<rr<rr<rrrrrr<rr<rr<rr<rr<rr<rr\r",
-        "$$p$$p$$p$$p$$p$$p$$p$$$$$rp$$p$$p$$p$$p$$p$$\r",
-        "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff\r",
-        "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff\r",
-        "ffpffpffpffpffpffpffp+ffff+pffpffpffpffpffpff\r",
-        "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff\r",
-        "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff\r",
-        "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff\r",
-        "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@\r",
-        "ggggggggggggggggggggggggggggggggggggggggggggg\r",
-        "ggggggggggggggggggggggggggggggggggggggggggggg"
-    ],
-    [
-        "                            @\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
-        "/////////////////////////////\n",
-    ],
-    [
-        "//////////////////////@"
-    ]
-
-
-]
-
-
 //add Player and other necessary elements
-function addEverythingNeeded(){
+export function addEverythingNeeded(){
 
 //Player and enemies creation
 
@@ -139,6 +127,24 @@ function addEverythingNeeded(){
         z(1000),
         "enemy"
     ])
+
+    function patrol(speed = 60, dir = 1) {
+        return {
+            id: "patrol",
+            require: [ "pos", "area" ],
+            add() {
+                this.on("collide", (obj, col) => {
+                    if (col.isLeft() || col.isRight()) {
+                        dir = -dir
+                    }
+                })
+            },
+            update() {
+                this.move(speed * dir, 0)
+            },
+        }
+    }
+
 
     /**
      const player = levels.get("player")[0]
@@ -171,10 +177,12 @@ function addEverythingNeeded(){
     player.onCollide("portal",()=>{
         go("nextLevel")
     })
+    /**
     player.onUpdate(()=>{
         camPos(vec2(player.pos.x,500))
         camScale(3)
     })
+     **/
 
 
 //Key pressed actions
@@ -229,7 +237,7 @@ function addEverythingNeeded(){
 
 //add tiles definition for levels
 
-let tilesSet = {
+export let tilesSet = {
     "b": ()=>[
         sprite("brick"),
         area(),
@@ -367,22 +375,39 @@ let tilesSet = {
 }
 
 
-function patrol(speed = 60, dir = 1) {
-    return {
-        id: "patrol",
-        require: [ "pos", "area" ],
-        add() {
-            this.on("collide", (obj, col) => {
-                if (col.isLeft() || col.isRight()) {
-                    dir = -dir
-                }
-            })
-        },
-        update() {
-            this.move(speed * dir, 0)
-        },
-    }
-}
+//Levels on the game
+
+export let niveaux = [
+
+
+    [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\r",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\r",
+        "rrprr<rr<rr<rr<rr<rr<rrrrrr<rr<rr<rr<rr<rr<rr\r",
+        "$$p$$p$$p$$p$$p$$p$$p$$$$$rp$$p$$p$$p$$p$$p$$\r",
+        "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff\r",
+        "ffpffpffpffpffpffpffpffffffpffpffpffpffpffpff\r",
+        "ffpffpffpffpffpffpffp+ffff+pffpffpffpffpffpff\r",
+        "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff\r",
+        "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff\r",
+        "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff\r",
+        "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@\r",
+        "ggggggggggggggggggggggggggggggggggggggggggggg\r",
+        "ggggggggggggggggggggggggggggggggggggggggggggg"
+    ],
+    [
+        "                            @\n",
+        "/////////////////////////////\n",
+        "/////////////////////////////\n",
+        "/////////////////////////////\n",
+        "/////////////////////////////\n",
+    ],
+    [
+        "//////////////////////@"
+    ]
+
+
+]
 
 //manage scenes in the game
 
@@ -404,20 +429,24 @@ scene("start",(niveau = niveaux)=>{
         pos: (500,500),
 
         tiles:
-            tilesSet
+        tilesSet
 
     })
 
     addEverythingNeeded()
+    addBackground(niveau,2)
+
 
 })
 
 //define the next level to appear in the game
 scene("nextLevel",(niveau = niveaux)=>{
-    let level = addLevel([
 
 
-         `${niveau[0]}`
+    const level = addLevel([
+
+
+        `${niveau[0]}`
 
 
 
@@ -428,11 +457,14 @@ scene("nextLevel",(niveau = niveaux)=>{
         pos: (500,500),
 
         tiles:
-            tilesSet
+        tilesSet
 
     })
 
     addEverythingNeeded()
+
+
+
 
 })
 
@@ -445,6 +477,8 @@ scene("lose", () => {
 
     onKeyPress(() => kaboom())
 })
+
+
+
 loadAllSprites()
-loadOptions()
 go("start")

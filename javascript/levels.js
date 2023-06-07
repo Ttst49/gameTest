@@ -1,7 +1,7 @@
 
 //Levels on the game
 
-let niveaux = [
+export let niveaux = [
 
 
     [

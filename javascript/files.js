@@ -1,5 +1,5 @@
 //Sprites import
-function loadAllSprites(){
+export function loadAllSprites(){
     loadSpriteAtlas("images/sprites/link2.png",{
         "link": {
             "x":0,
@@ -68,6 +68,7 @@ function loadAllSprites(){
 
 
 //Options of the game
-function loadOptions(){
+export function loadOptions(){
+    let SPEED;
     return SPEED = 120,setGravity(2400)
 }
