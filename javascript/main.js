@@ -3,6 +3,7 @@ kaboom({
     background: [0,0,0]
 })
 
+
 //Sprites import
 export function loadAllSprites(){
     loadSpriteAtlas("images/sprites/link2.png",{
@@ -70,6 +71,7 @@ export function loadAllSprites(){
     loadSprite("cactusB","images/sprites/cactusB.png")
     loadSprite("cactusT","images/sprites/cactusT.png")
     loadSprite("heart","images/sprites/heart.png")
+    loadSprite("emptyHeart","images/sprites/emptyHeart.png")
 
 
     for (let i = 1; i<=16;i++){
@@ -113,18 +115,31 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
         "player"
     ])
 
-    let j = 0
+
     let defaultHealth = 10
 
+
     function refreshLife(){
-        for (let i=0;i<=defaultHealth;i++){
-            const heart = add([
+        let j = 0
+        for (let i=1;i<=defaultHealth;i++){
+            const healthbar = add([
                 sprite("heart"),
-                pos(j,0),
-                fixed()
+                pos(j, 0),
+                fixed(),
+                scale(2),
+
             ])
-            j +=16
+            j +=32
         }
+    }
+
+    function takeOneHeartAway(){
+        const heartDeleted = add([
+            sprite("emptyHeart"),
+            pos(32*defaultHealth,0),
+            fixed(),
+            scale(2)
+        ])
     }
 
     refreshLife()
@@ -144,7 +159,7 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
             if (player.curAnim() === "stabFront"){
                 enemy.hurt(5)
             }else{
-                player.hurt(0.5)
+                player.hurt(1)
             }
 
 
@@ -186,14 +201,16 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
     player.on("hurt",()=>{
         play("hurt")
         defaultHealth--
-        refreshLife()
-
+        takeOneHeartAway()
     })
     player.on("death",()=>(
         destroy(player), play("death"), go("lose")
     ))
-    player.onCollide("portal",()=>{
+    player.onCollide("portalNext",()=>{
         sceneGenerator()
+    })
+    player.onCollide("portalPrevious",()=>{
+        sceneGenerator(false)
     })
     player.onUpdate(()=>{
         camPos(vec2(player.pos.x,550))
@@ -335,8 +352,18 @@ export let tilesSet = {
         area(),
         body({isStatic: true}),
         anchor("bot"),
-        "portal",
+        "portalNext",
     ],
+
+    "#": ()=>[
+        sprite("fond"),
+        area(),
+        body({isStatic: true}),
+        anchor("bot"),
+        "portalPrevious",
+    ],
+
+
 
     "/": ()=>[
         sprite("path"),
@@ -462,7 +489,7 @@ export let niveaux = [
         "ffpffpffpffpffpffpffpof^zfopffpffpffpffpffpff\r",
         "ffpffpffpffpffpffpfbbaaaaaabbfpffpffpffpffpff\r",
         "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff\r",
-        "ffpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@\r",
+        "@fpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@\r",
         "ggggggggggggggggggggggggggggggggggggggggggggg\r",
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
@@ -477,7 +504,7 @@ export let niveaux = [
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           444444444444444444444444444444444444444444444444",
+        "           #4444444444444444444444444444444444444444444444#",
         "           555555555555555555555555555555555555555555555555",
         "           555555555555555555555555555555555555555555555555"
 
@@ -497,8 +524,12 @@ let levelsInfo = {
     }
 }
 
-function sceneGenerator(){
-    levelsInfo.nextLevel.levelNumber +=1
+function sceneGenerator(next = true){
+    if (next){
+        levelsInfo.nextLevel.levelNumber +=1
+    }else{
+        levelsInfo.nextLevel.levelNumber -=1
+    }
     go(levelsInfo.nextLevel.tag)
 }
 
