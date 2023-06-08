@@ -1,12 +1,11 @@
-//launch game
 kaboom({
     background: [0,0,0]
 })
 
 
 //Sprites import
-export function loadAllSprites(){
-    loadSpriteAtlas("images/sprites/link2.png",{
+  function loadAllSprites(){
+    loadSpriteAtlas("images/sprites/link3.png",{
         "link": {
             "x":0,
             "y":0,
@@ -31,6 +30,18 @@ export function loadAllSprites(){
                     "speed":3,
                     "loop":false,
                 },
+                "crouch":{
+                    "from":14,
+                    "to":14,
+                    "speed":3,
+                    "loop":false
+                },
+                "crouchStab":{
+                    "from":14,
+                    "to":15,
+                    "speed":3,
+                    "loop":false
+                }
             }
 
         }
@@ -72,15 +83,23 @@ export function loadAllSprites(){
     loadSprite("cactusT","images/sprites/cactusT.png")
     loadSprite("heart","images/sprites/heart.png")
     loadSprite("emptyHeart","images/sprites/emptyHeart.png")
+    loadSprite("rupee","images/sprites/rupee.png")
+    loadSprite("cloudLeft","images/town/cloudLeft.png")
+    loadSprite("cloudRight","images/town/cloudRight.png")
+    loadSprite("sky","images/town/sky.png")
 
 
-    for (let i = 1; i<=16;i++){
-        loadSprite(`menu${i}`,`images/menu/menu_${i}.png`)
-    }
+      for (let i = 1; i<=16;i++){
+          loadSprite(`menu${i}`,`images/menu/menu_${i}.png`)
+      }
 
-    for (let i = 1;i<=5;i++){
-        loadSprite(`wood${i}`,`images/sprites/wood/wood${i}.png`)
-    }
+      for (let i = 1;i<=5;i++){
+          loadSprite(`wood${i}`,`images/sprites/wood/wood${i}.png`)
+      }
+
+      for (let i =1; i<=19;i++){
+          loadSprite(`town${i}`,`images/town/town${i}.png`)
+      }
 
 
 //Sound import
@@ -89,6 +108,7 @@ export function loadAllSprites(){
     loadSound("fire","music/AOL_Fire.wav")
     loadSound("death","music/AOL_Die.wav")
     loadSound("win","music/AOL_LearnSpell.wav")
+    loadSound("rupee","music/AOL_Pause.wav")
     /**---------------------------------------------------------------------------------------------------**/
 }
 
@@ -101,7 +121,7 @@ setGravity(2400)
 
 
 //add Player and other necessary elements
-export function addEverythingNeeded(numberOfEnnemies = 0){
+  function addEverythingNeeded(numberOfEnnemies = 0){
 
 //Player and enemies creation
 
@@ -169,6 +189,17 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
         })
         enemy.on("death",()=>{
             destroy(enemy)
+            let number = Math.random() * (10 - 0 + 1)
+            console.log(Math.round(number))
+            if (Math.round(number) % 2 === 0){
+                const rupee = add([
+                    sprite("rupee"),
+                    pos(enemy.pos.x,enemy.pos.y-5),
+                    scale(0.5)
+                ])
+            }
+
+
         })
     }
 
@@ -216,17 +247,25 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
         camPos(vec2(player.pos.x,550))
         camScale(3)
     })
+    player.onCollide("rupee",(r)=>{
+        destroy(r), play('rupee')
+    })
 
 
-//Key pressed actionsc
+
+//Key pressed actions
 
     onKeyPress("space", () => {
-        player.play("stabFront")
+        if (player.curAnim() == "idle"){
+            player.play("stabFront")
+        }else if (player.curAnim()=="crouch"){
+            player.play("crouchStab")
+        }
         play("sword")
 
 
         player.onAnimEnd((anim) =>{
-            if (anim === "stabFront"){
+            if (anim === "stabFront" || anim === "crouchStab"){
                 player.play("idle")
             }
         })
@@ -258,9 +297,24 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
             }
         })
     })
-    ;["left", "right"].forEach((key) => {
+
+      onKeyDown("down", () => {
+          player.move(0, 0)
+          player.flipX = false
+          if (player.isGrounded() && player.curAnim() !== "crouch") {
+              player.play("crouch")
+          }
+          player.onAnimEnd((anim) =>{
+              if (anim === "crouchStab"){
+                  player.play("idle")
+              }
+          })
+      })
+
+
+    ;["left", "right","down"].forEach((key) => {
         onKeyRelease(key, () => {
-            if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right")) {
+            if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right") && !isKeyDown("down")) {
                 player.play("idle")
             }
         })
@@ -270,7 +324,7 @@ export function addEverythingNeeded(numberOfEnnemies = 0){
 
 //add tiles definition for levels
 
-export let tilesSet = {
+  let tilesSet = {
 
         "b": ()=>[
             sprite("brick"),
@@ -352,6 +406,7 @@ export let tilesSet = {
         area(),
         body({isStatic: true}),
         anchor("bot"),
+        scale(0.1),
         "portalNext",
     ],
 
@@ -360,6 +415,7 @@ export let tilesSet = {
         area(),
         body({isStatic: true}),
         anchor("bot"),
+        scale(0.1),
         "portalPrevious",
     ],
 
@@ -400,11 +456,106 @@ export let tilesSet = {
     ],
 
 
+      "A": ()=>[
+          sprite("town1"),
+          z(-10),
+      ],
+      "Z": ()=>[
+          sprite("town2"),
+          z(-10),
+      ],
+      "E": ()=>[
+          sprite("town3"),
+          z(-10),
+      ],
+      "R": ()=>[
+          sprite("town4"),
+          z(-10),
+      ],
+      "T": ()=>[
+          sprite("town5"),
+          z(-10),
+      ],
+      "Y": ()=>[
+          sprite("town6"),
+          z(-10),
+      ],
+      "U": ()=>[
+          sprite("town7"),
+          z(-10),
+      ],
+      "I": ()=>[
+          sprite("town8"),
+          z(-10),
+      ],
+      "O": ()=>[
+          sprite("town9"),
+          z(-10),
+      ],
+      "P": ()=>[
+          sprite("town10"),
+          z(-10),
+      ],
+      "Q": ()=>[
+          sprite("town11"),
+          z(-10),
+      ],
+      "S": ()=>[
+          sprite("town12"),
+          z(-10),
+      ],
+      "D": ()=>[
+          sprite("town13"),
+          z(-10),
+          anchor("bot"),
+          area(),
+          body({isStatic: true}),
+      ],
+      "J": ()=>[
+          sprite("town14"),
+          z(-10),
+      ],
+      "K": ()=>[
+          sprite("town15"),
+          z(-10),
+      ],
+      "L": ()=>[
+          sprite("town16"),
+          z(-10),
+      ],
+      "M": ()=>[
+          sprite("town17"),
+          z(-10),
+      ],
+      "W": ()=>[
+          sprite("town18"),
+          z(-10),
+      ],
+      "X": ()=>[
+          sprite("town19"),
+          z(-10),
+      ],
+      "F": ()=>[
+          sprite("cloudRight"),
+          z(-10),
+      ],
+      "G": ()=>[
+          sprite("cloudLeft"),
+          z(-10),
+      ],
+      "H": ()=>[
+          sprite("sky"),
+          z(-10),
+      ],
+
+
+
+
 
 
 }
 
-export let tilesSetMenu = {
+  let tilesSetMenu = {
     "a": ()=>[
         sprite("menu1"),
         z(-10),
@@ -475,7 +626,7 @@ export let tilesSetMenu = {
 
 //Levels on the game
 
-export let niveaux = [
+  let niveaux = [
 
 
     [
@@ -491,6 +642,7 @@ export let niveaux = [
         "ffpffpffpffpffpffpbbaaaaaaaabbpffpffpffpffpff\r",
         "@fpffpffpffpffpfbbbaaaaaaaaaabbbfpffpffpffjf@\r",
         "ggggggggggggggggggggggggggggggggggggggggggggg\r",
+        "ggggggggggggggggggggggggggggggggggggggggggggg\r",
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
     [
@@ -504,13 +656,16 @@ export let niveaux = [
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
         "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           #4444444444444444444444444444444444444444444444#",
+        "           #4444444444444444444444444444444444444444444444@",
         "           555555555555555555555555555555555555555555555555",
         "           555555555555555555555555555555555555555555555555"
 
     ],
     [
-        "//////////////////////@"
+        "HHHHHHHHHSHSHHUUUfUUTfSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHHH",
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
     ]
 
 
@@ -536,7 +691,7 @@ function sceneGenerator(next = true){
 
 //manage scenes in the game
 
-//define the first scene
+//define the title menu
 scene("start",()=>{
 
     const level= addLevel([
@@ -614,3 +769,4 @@ scene("lose", () => {
 
 loadAllSprites()
 go("start")
+
