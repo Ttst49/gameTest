@@ -1,5 +1,5 @@
 kaboom({
-    background: [0,0,0]
+    background: [0,0,0,0]
 })
 
 
@@ -546,6 +546,12 @@ setGravity(2400)
           sprite("sky"),
           z(-10),
       ],
+      "=": ()=>[
+          sprite("fond"),
+          z(-10),
+          "door"
+      ],
+
 
 
 
@@ -645,55 +651,37 @@ setGravity(2400)
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
     [
-        "           111111111111111111111111111111111111111111111111",
-        "           111111111111111111111111111111111111111111111111",
-        "           111111111111111111111111111111111111111111111111",
-        "           331111333333331111113311113333111111311333333111",
-        "           ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
-        "           ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           #4444444444444444444444444444444444444444444444@",
-        "           555555555555555555555555555555555555555555555555",
-        "           555555555555555555555555555555555555555555555555"
+        "        111111111111111111111111111111111111111111111111",
+        "        111111111111111111111111111111111111111111111111",
+        "        111111111111111111111111111111111111111111111111",
+        "        331111333333331111113311113333111111311333333111",
+        "        ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
+        "        ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        #4444444444444444444444444444444444444444444444@",
+        "        555555555555555555555555555555555555555555555555",
+        "        555555555555555555555555555555555555555555555555"
 
     ],
-    [
-
-        "           HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-        "           HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
-        "           HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUZUUATHHHHHHHHHHHH",
-        "           HHHHHHHHHHHHHHUYUfUYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
-        "           HHHHHHHHHSHSHHUUUfUUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHHH",
-        "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-        "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-        "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-    ],
-
       [
-          "           HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "           HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
-          "           HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUZUUATHHHHHHHHHHHH",
-          "           HHHHHHHHHHHHHHUYUfUYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
-          "           HHHHHHHHHSHSHHUUUfUUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHHH",
-          "           fffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-          "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-          "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-          "           DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+          "        HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+          "        HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
+          "        HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUEUUATHHHHHHHHHHHH",
+          "        HHHHHHHHHHHHHHUYU=UYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
+          "        #HHHHHHHHSHSHHUUU=UUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHH@",
+          "        fffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
       ]
 
 ]
@@ -702,7 +690,8 @@ setGravity(2400)
 let levelsInfo = {
     "nextLevel" : {
         "tag":"nextLevel",
-        "levelNumber": 3
+        "levelNumber": 0,
+        "enemiesNumber":0
     }
 }
 
@@ -712,7 +701,12 @@ function sceneGenerator(next = true){
     }else{
         levelsInfo.nextLevel.levelNumber -=1
     }
-    go(levelsInfo.nextLevel.tag)
+    levelsInfo.nextLevel.enemiesNumber = 0 //Math.round(Math.random() * (2 - 0 + 1))
+    if (levelsInfo.nextLevel.levelNumber == 3){
+        go('win')
+    }else{
+        go(levelsInfo.nextLevel.tag)
+    }
 }
 
 
@@ -744,8 +738,8 @@ scene("start",()=>{
 
     })
 
-    camPos(width()/3 + 55,height()/2 + 100)
-    camScale(5)
+    camPos(width()/3 ,height()/2 + 100)
+    camScale(7)
 
     onKeyPress("space",()=>{
         go("nextLevel")
@@ -757,7 +751,6 @@ scene("start",()=>{
 
 //define the next level to appear in the game
 scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumber])=>{
-
 
     const level = addLevel(
 
@@ -775,7 +768,7 @@ scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumbe
 
     })
 console.log(niveaux)
-    addEverythingNeeded(0)
+    addEverythingNeeded(levelsInfo.nextLevel.enemiesNumber)
 
 
 
@@ -791,7 +784,14 @@ scene("lose", () => {
 
     onKeyPress(() => go("nextLevel"))
 })
+scene("win", () => {
+    add([
+        text("You Win"),
+        pos(12),
+    ])
 
+    onKeyPress(() => go("start"))
+})
 
 
 loadAllSprites()

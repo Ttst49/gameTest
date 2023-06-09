@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "kaboom": "^3000.0.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "parallax-js": "^3.1.0"
   }
 }
