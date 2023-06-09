@@ -1,5 +1,6 @@
 kaboom({
-    background: [0,0,0,0]
+
+    background: [0,0,0],
 })
 
 
@@ -244,8 +245,8 @@ setGravity(2400)
         sceneGenerator(false)
     })
     player.onUpdate(()=>{
-        camPos(vec2(player.pos.x,550))
-        camScale(3)
+        camPos(vec2(player.pos.x,590))
+        camScale(5)
     })
     player.onCollide("rupee",(r)=>{
         destroy(r), play('rupee')
@@ -738,8 +739,8 @@ scene("start",()=>{
 
     })
 
-    camPos(width()/3 ,height()/2 + 100)
-    camScale(7)
+    camPos(width()/3 - 10 ,height()/2 + 100)
+    camScale(6)
 
     onKeyPress("space",()=>{
         go("nextLevel")
@@ -767,7 +768,6 @@ scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumbe
         tilesSet
 
     })
-console.log(niveaux)
     addEverythingNeeded(levelsInfo.nextLevel.enemiesNumber)
 
 
