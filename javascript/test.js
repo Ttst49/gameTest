@@ -1,11 +1,15 @@
+import kaboom from "kaboom";
+
+
 kaboom({
-    background: [0,0,0]
+
+    background: [0,0,0],
 })
 
 
 //Sprites import
 function loadAllSprites(){
-    loadSpriteAtlas("images/sprites/link2.png",{
+    loadSpriteAtlas("images/sprites/link3.png",{
         "link": {
             "x":0,
             "y":0,
@@ -30,6 +34,18 @@ function loadAllSprites(){
                     "speed":3,
                     "loop":false,
                 },
+                "crouch":{
+                    "from":14,
+                    "to":14,
+                    "speed":3,
+                    "loop":false
+                },
+                "crouchStab":{
+                    "from":14,
+                    "to":15,
+                    "speed":3,
+                    "loop":false
+                }
             }
 
         }
@@ -72,6 +88,9 @@ function loadAllSprites(){
     loadSprite("heart","images/sprites/heart.png")
     loadSprite("emptyHeart","images/sprites/emptyHeart.png")
     loadSprite("rupee","images/sprites/rupee.png")
+    loadSprite("cloudLeft","images/town/cloudLeft.png")
+    loadSprite("cloudRight","images/town/cloudRight.png")
+    loadSprite("sky","images/town/sky.png")
 
 
     for (let i = 1; i<=16;i++){
@@ -80,6 +99,10 @@ function loadAllSprites(){
 
     for (let i = 1;i<=5;i++){
         loadSprite(`wood${i}`,`images/sprites/wood/wood${i}.png`)
+    }
+
+    for (let i =1; i<=19;i++){
+        loadSprite(`town${i}`,`images/town/town${i}.png`)
     }
 
 
@@ -97,7 +120,7 @@ function loadAllSprites(){
 //Options of the game
 let SPEED = 120
 setGravity(2400)
-
+let rupeeCounter = 0
 
 
 
@@ -105,6 +128,8 @@ setGravity(2400)
 function addEverythingNeeded(numberOfEnnemies = 0){
 
 //Player and enemies creation
+
+
 
     const player = add([
         sprite("link",{anim: "idle"}),  // renders as a sprite
@@ -116,8 +141,39 @@ function addEverythingNeeded(numberOfEnnemies = 0){
         "player"
     ])
 
+    const rupeeIcon = add([
+        sprite("rupee"),
+        pos(width()-75,13),
+        anchor("top"),
+        z(10000),
+        fixed(),
+    ])
+
+    const counterOfRupees =add([
+        text(rupeeCounter),
+        pos(width()-50,10),
+        anchor("top"),
+        z(10000),
+        fixed(),
+        {update(){this.text = rupeeCounter}}
+    ])
+
 
     let defaultHealth = 10
+
+
+    async function generateRupee(enemy){
+        const rupee = add([
+            sprite("rupee"),
+            pos(enemy.pos.x+30,enemy.pos.y-5),
+            scale(0.5),
+            area(),
+            "rupee"
+        ])
+
+        return rupee
+    }
+
 
 
     function refreshLife(){
@@ -128,7 +184,6 @@ function addEverythingNeeded(numberOfEnnemies = 0){
                 pos(j, 0),
                 fixed(),
                 scale(2),
-
             ])
             j +=32
         }
@@ -171,18 +226,26 @@ function addEverythingNeeded(numberOfEnnemies = 0){
         enemy.on("death",()=>{
             destroy(enemy)
             let number = Math.random() * (10 - 0 + 1)
-            console.log(Math.round(number))
-            if (Math.round(number) % 2 === 0){
-                const rupee = add([
-                    sprite("rupee"),
-                    pos(enemy.pos.x,enemy.pos.y-5),
-                    scale(0.5)
-                ])
+            if (Math.round(number) % 2 === 0 ){
+                generateRupee(enemy)
+                    .then((rupee)=>{
+                        onCollide("player","rupee",()=>{
+                            console.log("couc")
+                            destroy(rupee)
+                            play("rupee")
+                            rupeeCounter +=1
+                        })
+                    })
+
             }
+
 
 
         })
     }
+
+
+
 
     function patrol(speed = 60, dir = -1) {
         return {
@@ -201,15 +264,6 @@ function addEverythingNeeded(numberOfEnnemies = 0){
         }
     }
 
-
-    /**
-     const player = levels.get("player")[0]
-     const enemy = levels.get("enemy")[0]
-     **/
-
-//collision and touch actions
-
-
     player.on("hurt",()=>{
         play("hurt")
         defaultHealth--
@@ -225,24 +279,28 @@ function addEverythingNeeded(numberOfEnnemies = 0){
         sceneGenerator(false)
     })
     player.onUpdate(()=>{
-        camPos(vec2(player.pos.x,550))
-        camScale(3)
+        camPos(vec2(player.pos.x,590))
+        camScale(5)
     })
-    player.onCollide("rupee",(r)=>{
-        destroy(r), play('rupee')
-    })
+
 
 
 
 //Key pressed actions
 
+
+
     onKeyPress("space", () => {
-        player.play("stabFront")
+        if (player.curAnim() == "idle"){
+            player.play("stabFront")
+        }else if (player.curAnim()=="crouch"){
+            player.play("crouchStab")
+        }
         play("sword")
 
 
         player.onAnimEnd((anim) =>{
-            if (anim === "stabFront"){
+            if (anim === "stabFront" || anim === "crouchStab"){
                 player.play("idle")
             }
         })
@@ -274,9 +332,24 @@ function addEverythingNeeded(numberOfEnnemies = 0){
             }
         })
     })
-    ;["left", "right"].forEach((key) => {
+
+    onKeyDown("down", () => {
+        player.move(0, 0)
+        player.flipX = false
+        if (player.isGrounded() && player.curAnim() !== "crouch") {
+            player.play("crouch")
+        }
+        player.onAnimEnd((anim) =>{
+            if (anim === "crouchStab"){
+                player.play("idle")
+            }
+        })
+    })
+
+
+    ;["left", "right","down"].forEach((key) => {
         onKeyRelease(key, () => {
-            if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right")) {
+            if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right") && !isKeyDown("down")) {
                 player.play("idle")
             }
         })
@@ -368,6 +441,7 @@ let tilesSet = {
         area(),
         body({isStatic: true}),
         anchor("bot"),
+        scale(0.1),
         "portalNext",
     ],
 
@@ -376,6 +450,7 @@ let tilesSet = {
         area(),
         body({isStatic: true}),
         anchor("bot"),
+        scale(0.1),
         "portalPrevious",
     ],
 
@@ -414,6 +489,106 @@ let tilesSet = {
         area(),
         body({isStatic: true}),
     ],
+
+
+    "A": ()=>[
+        sprite("town1"),
+        z(-10),
+    ],
+    "Z": ()=>[
+        sprite("town2"),
+        z(-10),
+    ],
+    "E": ()=>[
+        sprite("town3"),
+        z(-10),
+    ],
+    "R": ()=>[
+        sprite("town4"),
+        z(-10),
+    ],
+    "T": ()=>[
+        sprite("town5"),
+        z(-10),
+    ],
+    "Y": ()=>[
+        sprite("town6"),
+        z(-10),
+    ],
+    "U": ()=>[
+        sprite("town7"),
+        z(-10),
+    ],
+    "I": ()=>[
+        sprite("town8"),
+        z(-10),
+    ],
+    "O": ()=>[
+        sprite("town9"),
+        z(-10),
+    ],
+    "P": ()=>[
+        sprite("town10"),
+        z(-10),
+    ],
+    "Q": ()=>[
+        sprite("town11"),
+        z(-10),
+    ],
+    "S": ()=>[
+        sprite("town12"),
+        z(-10),
+    ],
+    "D": ()=>[
+        sprite("town13"),
+        anchor("bot"),
+        area(),
+        body({isStatic: true}),
+    ],
+    "J": ()=>[
+        sprite("town14"),
+        z(-10),
+    ],
+    "K": ()=>[
+        sprite("town15"),
+        z(-10),
+    ],
+    "L": ()=>[
+        sprite("town16"),
+        z(-10),
+    ],
+    "M": ()=>[
+        sprite("town17"),
+        z(-10),
+    ],
+    "W": ()=>[
+        sprite("town18"),
+        z(-10),
+    ],
+    "X": ()=>[
+        sprite("town19"),
+        z(-10),
+    ],
+    "F": ()=>[
+        sprite("cloudRight"),
+        z(-10),
+    ],
+    "G": ()=>[
+        sprite("cloudLeft"),
+        z(-10),
+    ],
+    "H": ()=>[
+        sprite("sky"),
+        z(-10),
+    ],
+    "=": ()=>[
+        sprite("fond"),
+        z(-10),
+        "door"
+    ],
+
+
+
 
 
 
@@ -511,25 +686,38 @@ let niveaux = [
         "ggggggggggggggggggggggggggggggggggggggggggggg"
     ],
     [
-        "           111111111111111111111111111111111111111111111111",
-        "           111111111111111111111111111111111111111111111111",
-        "           111111111111111111111111111111111111111111111111",
-        "           331111333333331111113311113333111111311333333111",
-        "           ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
-        "           ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
-        "           #4444444444444444444444444444444444444444444444#",
-        "           555555555555555555555555555555555555555555555555",
-        "           555555555555555555555555555555555555555555555555"
+        "        111111111111111111111111111111111111111111111111",
+        "        111111111111111111111111111111111111111111111111",
+        "        111111111111111111111111111111111111111111111111",
+        "        331111333333331111113311113333111111311333333111",
+        "        ff33332fff2f2f3311332f33332fff311333233f2f2ff333",
+        "        ffffff2fff2f2fff33ff2fffff2ffff33fff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        ffffff2fff2f2fffffff2fffff2fffffffff2fff2f2fffff",
+        "        #4444444444444444444444444444444444444444444444@",
+        "        555555555555555555555555555555555555555555555555",
+        "        555555555555555555555555555555555555555555555555"
 
     ],
     [
-        "//////////////////////@"
+        "        HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
+        "        HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUEUUATHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUYU=UYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
+        "        #HHHHHHHHSHSHHUUU=UUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHH@",
+        "        fffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
     ]
-
 
 ]
 
@@ -537,7 +725,8 @@ let niveaux = [
 let levelsInfo = {
     "nextLevel" : {
         "tag":"nextLevel",
-        "levelNumber": 0
+        "levelNumber": 0,
+        "enemiesNumber":0
     }
 }
 
@@ -547,7 +736,12 @@ function sceneGenerator(next = true){
     }else{
         levelsInfo.nextLevel.levelNumber -=1
     }
-    go(levelsInfo.nextLevel.tag)
+    levelsInfo.nextLevel.enemiesNumber = 0 //Math.round(Math.random() * (2 - 0 + 1))
+    if (levelsInfo.nextLevel.levelNumber == 3){
+        go('win')
+    }else{
+        go(levelsInfo.nextLevel.tag)
+    }
 }
 
 
@@ -579,8 +773,8 @@ scene("start",()=>{
 
     })
 
-    camPos(width()/3 + 55,height()/2 + 100)
-    camScale(5)
+    camPos(width()/3 - 10 ,height()/2 + 100)
+    camScale(6)
 
     onKeyPress("space",()=>{
         go("nextLevel")
@@ -592,7 +786,6 @@ scene("start",()=>{
 
 //define the next level to appear in the game
 scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumber])=>{
-
 
     const level = addLevel(
 
@@ -609,8 +802,7 @@ scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumbe
             tilesSet
 
         })
-    console.log(niveaux)
-    addEverythingNeeded(0)
+    addEverythingNeeded(levelsInfo.nextLevel.enemiesNumber)
 
 
 
@@ -626,8 +818,17 @@ scene("lose", () => {
 
     onKeyPress(() => go("nextLevel"))
 })
-
+scene("win", () => {
+    add([
+        text("You Win"),
+        pos(12),
+    ])
+    rupeeCounter = 0
+    levelsInfo.nextLevel.levelNumber = 0
+    onKeyPress(() => go("start"))
+})
 
 
 loadAllSprites()
 go("start")
+

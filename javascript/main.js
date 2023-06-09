@@ -1,10 +1,10 @@
+//start kaboom engine and it components
 kaboom({
 
     background: [0,0,0],
 })
 
-
-//Sprites import
+//function importing every sprite needed in the games in order to work
   function loadAllSprites(){
     loadSpriteAtlas("images/sprites/link3.png",{
         "link": {
@@ -114,224 +114,32 @@ kaboom({
 }
 
 
-//Options of the game
+/**
+ * Options of the game
+ */
+
+//Define the speed of the character
 let SPEED = 120
+//define the force of the gravity
 setGravity(2400)
+//define the rupees displayed on the screen
+let rupeeCounter = 0
+//define the default health of the player
+let defaultHealth = 3
 
 
+/**
+ *Defines the tiles to be used in the game for environments
+ */
 
+//define general tiles in the levels
+let tilesSet = {
 
-//add Player and other necessary elements
-  function addEverythingNeeded(numberOfEnnemies = 0){
-
-//Player and enemies creation
-
-    const player = add([
-        sprite("link",{anim: "idle"}),  // renders as a sprite
-        area(),          // has a collider
-        pos(700,600),
-        body(), // responds to physics and gravity
-        health(10),
-        z(1000),
-        "player"
-    ])
-
-
-    let defaultHealth = 10
-
-
-    function refreshLife(){
-        let j = 0
-        for (let i=1;i<=defaultHealth;i++){
-            const healthbar = add([
-                sprite("heart"),
-                pos(j, 0),
-                fixed(),
-                scale(2),
-
-            ])
-            j +=32
-        }
-    }
-
-    function takeOneHeartAway(){
-        const heartDeleted = add([
-            sprite("emptyHeart"),
-            pos(32*defaultHealth,0),
-            fixed(),
-            scale(2)
-        ])
-    }
-
-    refreshLife()
-
-    for (let i=0;i<=numberOfEnnemies;i++){
-        const enemy = add([
-            sprite("enemy",{anim:"run"}),  // renders as a sprite
-            area(),          // has a collider
-            pos(Math.random()*(1000-850 +1)+850,600),
-            body(), // responds to physics and gravity
-            health(3),
-            patrol(),
-            z(1000),
-            "enemy"
-        ])
-        player.onCollide("enemy",(enemy)=>{
-            if (player.curAnim() === "stabFront"){
-                enemy.hurt(5)
-            }else{
-                player.hurt(1)
-            }
-
-
-        })
-        enemy.on("hurt",()=>{
-            play("fire")
-        })
-        enemy.on("death",()=>{
-            destroy(enemy)
-            let number = Math.random() * (10 - 0 + 1)
-            console.log(Math.round(number))
-            if (Math.round(number) % 2 === 0){
-                const rupee = add([
-                    sprite("rupee"),
-                    pos(enemy.pos.x,enemy.pos.y-5),
-                    scale(0.5)
-                ])
-            }
-
-
-        })
-    }
-
-    function patrol(speed = 60, dir = -1) {
-        return {
-            id: "patrol",
-            require: [ "pos", "area" ],
-            add() {
-                this.on("collide", (obj, col) => {
-                    if (col.isLeft() || col.isRight()) {
-                        dir = -dir
-                    }
-                })
-            },
-            update() {
-                this.move(speed * dir, 0)
-            },
-        }
-    }
-
-
-    /**
-     const player = levels.get("player")[0]
-     const enemy = levels.get("enemy")[0]
-     **/
-
-//collision and touch actions
-
-
-    player.on("hurt",()=>{
-        play("hurt")
-        defaultHealth--
-        takeOneHeartAway()
-    })
-    player.on("death",()=>(
-        destroy(player), play("death"), go("lose")
-    ))
-    player.onCollide("portalNext",()=>{
-        sceneGenerator()
-    })
-    player.onCollide("portalPrevious",()=>{
-        sceneGenerator(false)
-    })
-    player.onUpdate(()=>{
-        camPos(vec2(player.pos.x,590))
-        camScale(5)
-    })
-    player.onCollide("rupee",(r)=>{
-        destroy(r), play('rupee')
-    })
-
-
-
-//Key pressed actions
-
-    onKeyPress("space", () => {
-        if (player.curAnim() == "idle"){
-            player.play("stabFront")
-        }else if (player.curAnim()=="crouch"){
-            player.play("crouchStab")
-        }
-        play("sword")
-
-
-        player.onAnimEnd((anim) =>{
-            if (anim === "stabFront" || anim === "crouchStab"){
-                player.play("idle")
-            }
-        })
-
-    })
-    onKeyDown("left", () => {
-        player.move(-SPEED, 0)
-        player.flipX = true
-        if (player.isGrounded() && player.curAnim() !== "run") {
-            player.play("run")
-
-        }
-        player.onAnimEnd((anim) =>{
-            if (anim === "stabFront"){
-                player.play("idle")
-            }
-        })
-
-    })
-    onKeyDown("right", () => {
-        player.move(SPEED, 0)
-        player.flipX = false
-        if (player.isGrounded() && player.curAnim() !== "run") {
-            player.play("run")
-        }
-        player.onAnimEnd((anim) =>{
-            if (anim === "stabFront"){
-                player.play("idle")
-            }
-        })
-    })
-
-      onKeyDown("down", () => {
-          player.move(0, 0)
-          player.flipX = false
-          if (player.isGrounded() && player.curAnim() !== "crouch") {
-              player.play("crouch")
-          }
-          player.onAnimEnd((anim) =>{
-              if (anim === "crouchStab"){
-                  player.play("idle")
-              }
-          })
-      })
-
-
-    ;["left", "right","down"].forEach((key) => {
-        onKeyRelease(key, () => {
-            if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right") && !isKeyDown("down")) {
-                player.play("idle")
-            }
-        })
-    })
-
-}
-
-//add tiles definition for levels
-
-  let tilesSet = {
-
-        "b": ()=>[
-            sprite("brick"),
-            z(-10),
-            "brick",
-        ],
+    "b": ()=>[
+        sprite("brick"),
+        z(-10),
+        "brick",
+    ],
 
 
     "r": ()=>[
@@ -457,101 +265,101 @@ setGravity(2400)
     ],
 
 
-      "A": ()=>[
-          sprite("town1"),
-          z(-10),
-      ],
-      "Z": ()=>[
-          sprite("town2"),
-          z(-10),
-      ],
-      "E": ()=>[
-          sprite("town3"),
-          z(-10),
-      ],
-      "R": ()=>[
-          sprite("town4"),
-          z(-10),
-      ],
-      "T": ()=>[
-          sprite("town5"),
-          z(-10),
-      ],
-      "Y": ()=>[
-          sprite("town6"),
-          z(-10),
-      ],
-      "U": ()=>[
-          sprite("town7"),
-          z(-10),
-      ],
-      "I": ()=>[
-          sprite("town8"),
-          z(-10),
-      ],
-      "O": ()=>[
-          sprite("town9"),
-          z(-10),
-      ],
-      "P": ()=>[
-          sprite("town10"),
-          z(-10),
-      ],
-      "Q": ()=>[
-          sprite("town11"),
-          z(-10),
-      ],
-      "S": ()=>[
-          sprite("town12"),
-          z(-10),
-      ],
-      "D": ()=>[
-          sprite("town13"),
-          anchor("bot"),
-          area(),
-          body({isStatic: true}),
-      ],
-      "J": ()=>[
-          sprite("town14"),
-          z(-10),
-      ],
-      "K": ()=>[
-          sprite("town15"),
-          z(-10),
-      ],
-      "L": ()=>[
-          sprite("town16"),
-          z(-10),
-      ],
-      "M": ()=>[
-          sprite("town17"),
-          z(-10),
-      ],
-      "W": ()=>[
-          sprite("town18"),
-          z(-10),
-      ],
-      "X": ()=>[
-          sprite("town19"),
-          z(-10),
-      ],
-      "F": ()=>[
-          sprite("cloudRight"),
-          z(-10),
-      ],
-      "G": ()=>[
-          sprite("cloudLeft"),
-          z(-10),
-      ],
-      "H": ()=>[
-          sprite("sky"),
-          z(-10),
-      ],
-      "=": ()=>[
-          sprite("fond"),
-          z(-10),
-          "door"
-      ],
+    "A": ()=>[
+        sprite("town1"),
+        z(-10),
+    ],
+    "Z": ()=>[
+        sprite("town2"),
+        z(-10),
+    ],
+    "E": ()=>[
+        sprite("town3"),
+        z(-10),
+    ],
+    "R": ()=>[
+        sprite("town4"),
+        z(-10),
+    ],
+    "T": ()=>[
+        sprite("town5"),
+        z(-10),
+    ],
+    "Y": ()=>[
+        sprite("town6"),
+        z(-10),
+    ],
+    "U": ()=>[
+        sprite("town7"),
+        z(-10),
+    ],
+    "I": ()=>[
+        sprite("town8"),
+        z(-10),
+    ],
+    "O": ()=>[
+        sprite("town9"),
+        z(-10),
+    ],
+    "P": ()=>[
+        sprite("town10"),
+        z(-10),
+    ],
+    "Q": ()=>[
+        sprite("town11"),
+        z(-10),
+    ],
+    "S": ()=>[
+        sprite("town12"),
+        z(-10),
+    ],
+    "D": ()=>[
+        sprite("town13"),
+        anchor("bot"),
+        area(),
+        body({isStatic: true}),
+    ],
+    "J": ()=>[
+        sprite("town14"),
+        z(-10),
+    ],
+    "K": ()=>[
+        sprite("town15"),
+        z(-10),
+    ],
+    "L": ()=>[
+        sprite("town16"),
+        z(-10),
+    ],
+    "M": ()=>[
+        sprite("town17"),
+        z(-10),
+    ],
+    "W": ()=>[
+        sprite("town18"),
+        z(-10),
+    ],
+    "X": ()=>[
+        sprite("town19"),
+        z(-10),
+    ],
+    "F": ()=>[
+        sprite("cloudRight"),
+        z(-10),
+    ],
+    "G": ()=>[
+        sprite("cloudLeft"),
+        z(-10),
+    ],
+    "H": ()=>[
+        sprite("sky"),
+        z(-10),
+    ],
+    "=": ()=>[
+        sprite("fond"),
+        z(-10),
+        "door"
+    ],
 
 
 
@@ -561,7 +369,8 @@ setGravity(2400)
 
 }
 
-  let tilesSetMenu = {
+//define Menu tiles that define the title screen image
+let tilesSetMenu = {
     "a": ()=>[
         sprite("menu1"),
         z(-10),
@@ -629,10 +438,12 @@ setGravity(2400)
 
 }
 
+/**
+ * Define everything related to levels
+ */
 
-//Levels on the game
-
-  let niveaux = [
+//Array of levels in the game
+let niveaux = [
 
 
     [
@@ -667,23 +478,23 @@ setGravity(2400)
         "        555555555555555555555555555555555555555555555555"
 
     ],
-      [
-          "        HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "        HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
-          "        HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUEUUATHHHHHHHHHHHH",
-          "        HHHHHHHHHHHHHHUYU=UYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
-          "        #HHHHHHHHSHSHHUUU=UUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHH@",
-          "        fffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
-          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
-          "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
-      ]
+    [
+        "        HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHGFHHHHHHHHHHRRRRRRRHHHHHGFHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHPPPPPPPHHHHHHHHGFHHHHHHHHHHHHHHHHHGFHHHHHHH",
+        "        HHHHHHHHHHHHHHUUUUUUTHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUAUAUATHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUYUYUYTHHHMMMMMMMHHHHHRRRRRRRRRHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUUUUUUTHHHWWWWWWWHHHHHPPPPPPPPPHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUAUZUATHHHLJLELJXHHHHHUAUUEUUATHHHHHHHHHHHH",
+        "        HHHHHHHHHHHHHHUYU=UYTHHHLKLILKXHHHHHUYUUIUUYTHHHHHHHHHHHH",
+        "        #HHHHHHHHSHSHHUUU=UUTHSSLLLOLLXHSSHHUUUUOUUUTHSSHHHHHHHH@",
+        "        fffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "        DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+    ]
 
 ]
 
@@ -696,13 +507,258 @@ let levelsInfo = {
     }
 }
 
+
+//function that defines the constants and variables and the interactions needed by the game to work fine
+  function addEverythingNeeded(numberOfEnnemies = 0){
+
+    //define the player and it options
+    const player = add([
+        sprite("link",{anim: "idle"}),  // renders as a sprite
+        area(),          // has a collider
+        pos(700,600),
+        body(), // responds to physics and gravity
+        health(3),
+        z(1000),
+        "player"
+    ])
+
+    //define the rupee icon in the UI
+    const rupeeIcon = add([
+      sprite("rupee"),
+      pos(width()-75,13),
+      anchor("top"),
+      z(10000),
+      fixed(),
+  ])
+
+    //define the number of rupees in the player inventory
+    const counterOfRupees =add([
+      text(rupeeCounter),
+      pos(width()-50,10),
+      anchor("top"),
+      z(10000),
+      fixed(),
+      {update(){this.text = rupeeCounter}}
+  ])
+
+
+      //async function that generates rupee on enemy death
+      async function generateRupee(enemy){
+          const rupee = add([
+              sprite("rupee"),
+              pos(enemy.pos.x+30,enemy.pos.y-5),
+              scale(0.5),
+              area(),
+              "rupee"
+          ])
+
+          return rupee
+      }
+
+      //function that refreshes healthBar in the game whenever it updates
+      function refreshLife(){
+          let j = 0
+          for (let i=1;i<=defaultHealth;i++){
+              const healthbar = add([
+                  sprite("heart"),
+                  pos(j, 0),
+                  fixed(),
+                  scale(2),
+              ])
+              j +=32
+          }
+      }
+
+      //function that defines the action when the player is touched
+      function takeOneHeartAway(){
+          const heartDeleted = add([
+              sprite("emptyHeart"),
+              pos(32*defaultHealth,0),
+              fixed(),
+              scale(2)
+          ])
+      }
+
+
+      //define the numbers of ennemies to appear in the game on level start
+      for (let i=0;i<=numberOfEnnemies;i++){
+          const enemy = add([
+              sprite("enemy",{anim:"run"}),  // renders as a sprite
+              area(),          // has a collider
+              pos(Math.random()*(1000-850 +1)+850,600),
+              body(), // responds to physics and gravity
+              health(3),
+              patrol(),
+              z(1000),
+              "enemy"
+          ])
+
+          //define the collision between player and enemy
+          player.onCollide("enemy",(enemy)=>{
+              if (player.curAnim() === "stabFront"){
+                  enemy.hurt(5)
+              }else{
+                  player.hurt(1)
+              }
+
+
+          })
+          //defines the actions when an enemy dies or be hurt
+          enemy.on("hurt",()=>{
+              play("fire")
+          })
+          enemy.on("death",()=>{
+              destroy(enemy)
+              let number = Math.random() * (10 - 0 + 1)
+              if (Math.round(number) % 2 === 0 ){
+                  generateRupee(enemy)
+                      .then((rupee)=>{
+                          onCollide("player","rupee",()=>{
+                              console.log("couc")
+                              destroy(rupee)
+                              play("rupee")
+                              rupeeCounter +=1
+                          })
+                      })
+
+              }
+
+
+
+          })
+      }
+
+      //function that defines the action of the ennemies during the game, and it movements
+      function patrol(speed = 60, dir = -1) {
+          return {
+              id: "patrol",
+              require: [ "pos", "area" ],
+              add() {
+                  this.on("collide", (obj, col) => {
+                      if (col.isLeft() || col.isRight()) {
+                          dir = -dir
+                      }
+                  })
+              },
+              update() {
+                  this.move(speed * dir, 0)
+              },
+          }
+      }
+
+      /**
+       * Define all the actions in coherence with player
+       */
+
+      //define the actions when the player dies or be hurt
+      player.on("hurt",()=>{
+          play("hurt")
+          defaultHealth--
+          takeOneHeartAway()
+      })
+      player.on("death",()=>(
+          destroy(player), play("death"), go("lose")
+      ))
+
+      //define the actions when the player collides portal that leads to other levels
+      player.onCollide("portalNext",()=>{
+          sceneGenerator()
+      })
+      player.onCollide("portalPrevious",()=>{
+          sceneGenerator(false)
+      })
+
+      //define the camera in the game following the player through his adventure
+      player.onUpdate(()=>{
+          camPos(vec2(player.pos.x,590))
+          camScale(5)
+      })
+
+      /**
+       * Define everything that relates to pressed keys
+       */
+
+      //Define the attack of the player and it animation
+      onKeyPress("space", () => {
+          if (player.curAnim() == "idle"){
+              player.play("stabFront")
+          }else if (player.curAnim()=="crouch"){
+              player.play("crouchStab")
+          }
+          play("sword")
+
+
+          player.onAnimEnd((anim) =>{
+              if (anim === "stabFront" || anim === "crouchStab"){
+                  player.play("idle")
+              }
+          })
+
+      })
+
+      //define the 3 directions that can lead by the player during the game
+      onKeyDown("left", () => {
+          player.move(-SPEED, 0)
+          player.flipX = true
+          if (player.isGrounded() && player.curAnim() !== "run") {
+              player.play("run")
+
+          }
+          player.onAnimEnd((anim) =>{
+              if (anim === "stabFront"){
+                  player.play("idle")
+              }
+          })
+
+      })
+      onKeyDown("right", () => {
+          player.move(SPEED, 0)
+          player.flipX = false
+          if (player.isGrounded() && player.curAnim() !== "run") {
+              player.play("run")
+          }
+          player.onAnimEnd((anim) =>{
+              if (anim === "stabFront"){
+                  player.play("idle")
+              }
+          })
+      })
+      onKeyDown("down", () => {
+          player.move(0, 0)
+          player.flipX = false
+          if (player.isGrounded() && player.curAnim() !== "crouch") {
+              player.play("crouch")
+          }
+          player.onAnimEnd((anim) =>{
+              if (anim === "crouchStab"){
+                  player.play("idle")
+              }
+          })
+      })
+
+      //define a default animation when the player isn't touching any keys
+      ;["left", "right","down"].forEach((key) => {
+          onKeyRelease(key, () => {
+              if (player.isGrounded() && !isKeyDown("left") && !isKeyDown("right") && !isKeyDown("down")) {
+                  player.play("idle")
+              }
+          })
+      })
+
+
+      //add healthBar on the UI and make it work in-game
+      refreshLife()
+  }
+
+
+//function that make the new level scene automatically depending on which level you're in
 function sceneGenerator(next = true){
     if (next){
         levelsInfo.nextLevel.levelNumber +=1
     }else{
         levelsInfo.nextLevel.levelNumber -=1
     }
-    levelsInfo.nextLevel.enemiesNumber = 0 //Math.round(Math.random() * (2 - 0 + 1))
+    levelsInfo.nextLevel.enemiesNumber = Math.round(Math.random() * (2 - 0 + 1))
     if (levelsInfo.nextLevel.levelNumber == 3){
         go('win')
     }else{
@@ -710,10 +766,7 @@ function sceneGenerator(next = true){
     }
 }
 
-
-//manage scenes in the game
-
-//define the title menu
+//scene that declares the title Screen
 scene("start",()=>{
 
     const level= addLevel([
@@ -750,7 +803,7 @@ scene("start",()=>{
 })
 
 
-//define the next level to appear in the game
+//scene that declares the next level to appear in the game
 scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumber])=>{
 
     const level = addLevel(
@@ -775,7 +828,7 @@ scene(levelsInfo.nextLevel.tag,(niveau = niveaux[levelsInfo.nextLevel.levelNumbe
 
 })
 
-
+//scene that declares a loose case during the game
 scene("lose", () => {
     add([
         text("You Lose"),
@@ -784,16 +837,19 @@ scene("lose", () => {
 
     onKeyPress(() => go("nextLevel"))
 })
+
+//scene that declares a win case during the game
 scene("win", () => {
     add([
         text("You Win"),
         pos(12),
     ])
-
+    rupeeCounter = 0
+    levelsInfo.nextLevel.levelNumber = 0
     onKeyPress(() => go("start"))
 })
 
-
+//call Everything you need to launch the game
 loadAllSprites()
+//start the game
 go("start")
-
